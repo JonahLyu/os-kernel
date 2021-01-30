@@ -1,0 +1,115 @@
+-------------------------------------------------------------------------------
+
+1. Instructions
+
+- replace any [...] with free text,
+  and
+- replace the [?] with an X if you have completed that stage,
+- replace the [?] with an * if you have attempted that stage, but you know
+  it doesn't work completely; document why you think it doesn't work, plus
+  what you would do to fix the problem, at the end of the marksheet.
+
+-------------------------------------------------------------------------------
+
+2. Information
+
+So that we can calibrate and improve the assignment in the future, give us
+a rough idea how long (in hours) you spent on it *in total*:
+
+effort : [110] hours
+
+-------------------------------------------------------------------------------
+
+3. Citation
+
+Clearly it might have an influence on your mark, but the use of third-party
+resources *is* allowed *if* correctly cited (unless explicitly prohibited 
+by the assignment description of course).  Let us know what third-party 
+source code or resources you used (if any) so it's clear what's your work 
+and what isn't:
+
+[...]
+
+-------------------------------------------------------------------------------
+
+4. Marking
+
+The following gives a stage-by-stage description of the assignment marking
+scheme.  Note this acts as an indicative guideline only, including weights
+for each more obvious aspect (e.g., functional correctness); other aspects
+outside this list can warrant an increase/decrease in marks, with examples
+including hard to quantify features such as style, efficiency, robustness, 
+generality, or realism of a solution.  Put another way, identifying then
+reasoning about these latter aspects forms part of the assessment, so they
+are not (necessarily) detailed explicitly.
+
+    Stage 1 : a baseline kernel
+[X]           - pre-emptive multi-tasking                            ( 30%)
+[X]           - priority-based scheduler                             ( 10%)
+
+    Stage 2 : closed generalisations and enhancements
+[X]           - fork, exec and exit system calls                     ( 15%)
+[X]           - Inter-Process Communication (IPC)                    ( 15%)
+
+    Stage 3 : open   generalisations and enhancements                ( 30%)
+[?]           - MMU-based protection and virtualisation
+                *OR*
+[?]           - LCD screen and PS/2 device drivers and GUI
+                *OR*
+[*]           - file system based on simplified, emulated disk
+                *OR*
+[?]           - kernel port to real, physical hardware                     
+
+                                                                     ------
+                                                                     (100%)
+
+-------------------------------------------------------------------------------
+
+5. Documentation
+
+Any other documentation, notes or comments that you think are important or
+might be easy to overlook (e.g., a subtle issue or technique in associated
+source code) should go here:
+
+[For the stage 1 (b):
+The priority based scheduler
+The console process has a special priority: if console process does not run in three rounds of scheduling, the scheduler will dispatch to console process once.
+
+For the stage 2 (a):
+The fork child has an initial priority which is the same as the console priority.
+
+For the stage 2 (b),
+I realise the pipe IPC by creating numbers of fix empty pipes. Each pair of pid can get a unique unidirectional pipe to communicate. For the dining philosopher problem, to ensure mutual exclusion, I create a waiter process. Each philosopher's process will put down all forks and send a request to the waiter before each round. And then waiter will respond to all philosophers to tell them if they can eat. To avoid starvation, each philosopher has a priority attribute. If a philosopher does not eat in last round, the priority will increase. And the waiter will serve the philosopher with the highest priority first.
+
+For the stage 3,
+The file system support a simple inode-based structure with 65536 blocks and 16 bytes block length:
+
+0x1000 - 0x1FFF file name blocks:
+
+    Each file takes two blocks, the first blocks stores the file name string data, the second block stores file info:
+    Byte 0: a flag to indicate if this file exists
+    Byte 1-2: the inode id
+    
+0x2000 - 0x3FFF inode blocks:
+    Each inode takes one block:
+    Byte 0: a flag to indicate if this inode is used
+    Byte 1-2: the file size
+    Byte 3-15: the data block pointer
+
+0x4000 - 0xFFFF data blocks
+
+The current implementation does not support the file hierarchy. All operations(open, close, read, write) are running in one root directory and  all files are stored in continuous block. Each process has file descriptor table to trace the file state. A file name table is used for quick file search. Meanwhile, I added some useful commands and user programs to run in console:
+	ls         #to list all files in current directory
+	rm <file>  #to remove a file in current directory
+        state      #show the current system state:number of processes, scheduler algorithm ,process pid
+	cs 1        #change scheduler algorithm to round robin
+        cs 2        #change scheduler algorithm to priority base
+        execute test_write      #test open, close and write functions, several files will be written or appended into root directory
+	execute test_read       #test open, close and read functions, several files will be read and print to UART0 terminal
+	execute test_wc         #test finding the number of byte and lines of a file.
+	disk       #show the disk info on shell
+	nice <pid> <priority>   #set priority of a process
+
+]
+
+-------------------------------------------------------------------------------
